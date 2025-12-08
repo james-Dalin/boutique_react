@@ -23,6 +23,15 @@ export default function Cart({ setPage }) {
                 {cart.map(item => (
                     <div key={item.id} className="cart-item">
                         <img src={item.image} alt={item.name} />
+
+                        <div className="item-details">
+                            <h3>{item.name}</h3>
+                            <p className="price">${item.price.toFixed(2)}</p>
+                        </div>
+
+                        <div className="item-controls">
+                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                        </div>
                     </div>
                 ))}
             </div>
