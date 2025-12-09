@@ -51,6 +51,39 @@ export default function Cart({ setPage }) {
                     </div>
                 ))}
             </div>
+
+            <div className="cart-summary">
+                <div className="summary-row">
+                    <span>Sous-total:</span>
+                    <span>${totalPrice}</span>
+                </div>
+                <div className="summary-row">
+                    <span>Livraison:</span>
+                    <span>Gratuite</span>
+                </div>
+                <div className="summary-row total">
+                    <span>Total:</span>
+                    <span>${totalPrice}</span>
+                </div>
+            </div>
+
+            <div className="cart-actions">
+                <button onClick={() => setPage('home')} className="continue-btn">
+                    ← Continuer les achats
+                </button>
+                <button onClick={() => {
+                    if (window.confirm('Confirmer la commande ?')) {
+                        clearCart();
+                        alert('✅ Commande validée !');
+                        setPage('home');
+                    }
+                }} className="checkout-btn">
+                    ✓ Valider la commande
+                </button>
+                <button onClick={clearCart} className="clear-btn">
+                    🗑️ Vider le panier
+                </button>
+            </div>
         </div>
     )
 }
