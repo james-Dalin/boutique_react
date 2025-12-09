@@ -6,17 +6,17 @@ export const CartContext = createContext();
 // Provider = composant qui partage le contexte
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(null);
 
   // Charge le panier depuis LocalStorage au démarrage
   useEffect(() => {
+    // Panier
     const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setCart(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Erreur lecture panier:', error);
-      }
-    }
+    if (savedCart) setCart(JSON.parse(savedCart));
+
+    // User
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) setUser(JSON.parse(savedUser)); 
   }, []);
 
   // Sauvegarde le panier dans LocalStorage à chaque modification
@@ -24,11 +24,31 @@ export function CartProvider({ children }) {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
+  // Sauvegarder User
+  useEddect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
+  // Login function
+  const login = (userData) => {
+    setUser(userData);
+  };
+
+  // Logout function
+  const logout = () => {
+    setUser(null);
+    // Optinonel : vider le panier au logout
+    // setCart([]);
+  };
+
   // Ajouter un produit au panier
   const addToCart = (product) => {
     // Vérifie si le produit existe déjà
     const existingItem = cart.find(item => item.id === product.id);
-
     if (existingItem) {
       // Si oui, augmente la quantité
       setCart(cart.map(item =>
@@ -82,7 +102,7 @@ export function CartProvider({ children }) {
   };
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider value={{cart, addToCart, removeFromCart, updateQuantity, clearCart, totalPrice,user, login, logout}}>
       {children}
     </CartContext.Provider>
   );
