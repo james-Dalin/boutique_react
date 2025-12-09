@@ -31,7 +31,23 @@ export default function Cart({ setPage }) {
 
                         <div className="item-controls">
                             <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                            <input 
+                                type="number"
+                                value={item.quantity}
+                                onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                                mint="1" />
+                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                         </div>
+
+                        <div className="item-total">
+                            ${(item.price * item.quantity).toFixed(2)}
+                        </div>
+
+                        <button 
+                            className="delete-btn"
+                            onClick={() => removeFromCart(item.id)}>
+                                🗑️
+                            </button>
                     </div>
                 ))}
             </div>
