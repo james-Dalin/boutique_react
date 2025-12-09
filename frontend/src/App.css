@@ -149,3 +149,35 @@ h1 {
   margin: 0;
   font-size: 14px;
 }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  color: #555;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid #999;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.login-link {
+  background: transparent;
+  border: none;
+  color: #3498db;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
