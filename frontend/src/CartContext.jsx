@@ -1,14 +1,12 @@
 import { createContext, useState, useEffect } from 'react';
 
-// Crée le Context
 export const CartContext = createContext();
 
-// Provider = composant qui partage le contexte
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // <--- NOUVEAU: User state
 
-  // Charge le panier depuis LocalStorage au démarrage
+  // Charge Panier + User au démarrage
   useEffect(() => {
     // Panier
     const savedCart = localStorage.getItem('cart');
@@ -16,16 +14,16 @@ export function CartProvider({ children }) {
 
     // User
     const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser)); 
+    if (savedUser) setUser(JSON.parse(savedUser));
   }, []);
 
-  // Sauvegarde le panier dans LocalStorage à chaque modification
+  // Sauvegarde Panier
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Sauvegarder User
-  useEddect(() => {
+  // Sauvegarde User
+  useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
     } else {
@@ -41,68 +39,36 @@ export function CartProvider({ children }) {
   // Logout function
   const logout = () => {
     setUser(null);
-    // Optinonel : vider le panier au logout
-    // setCart([]);
+    // Optionnel: Vider le panier au logout?
+    // setCart([]); 
   };
 
-  // Ajouter un produit au panier
+  // ... (Garde addToCart, removeFromCart, etc. comme avant) ...
   const addToCart = (product) => {
-    // Vérifie si le produit existe déjà
     const existingItem = cart.find(item => item.id === product.id);
     if (existingItem) {
-      // Si oui, augmente la quantité
-      setCart(cart.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ));
+      setCart(cart.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
     } else {
-      // Sinon, ajoute le produit
       setCart([...cart, { ...product, quantity: 1 }]);
     }
   };
 
-  // Supprimer un produit du panier
-  const removeFromCart = (productId) => {
-    setCart(cart.filter(item => item.id !== productId));
-  };
-
-  // Modifier la quantité
+  const removeFromCart = (productId) => setCart(cart.filter(item => item.id !== productId));
+  
   const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      setCart(cart.map(item =>
-        item.id === productId
-          ? { ...item, quantity }
-          : item
-      ));
-    }
+    if (quantity <= 0) removeFromCart(productId);
+    else setCart(cart.map(item => item.id === productId ? { ...item, quantity } : item));
   };
 
-  // Vider le panier
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
-  // Prix total
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + (item.price * item.quantity),
-    0
-  ).toFixed(2);
-
-  // Export les données et fonctions
-  const value = {
-    cart,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    totalPrice
-  };
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
 
   return (
-    <CartContext.Provider value={{cart, addToCart, removeFromCart, updateQuantity, clearCart, totalPrice,user, login, logout}}>
+    <CartContext.Provider value={{
+      cart, addToCart, removeFromCart, updateQuantity, clearCart, totalPrice,
+      user, login, logout // <--- Exporte ces nouvelles fonctions
+    }}>
       {children}
     </CartContext.Provider>
   );

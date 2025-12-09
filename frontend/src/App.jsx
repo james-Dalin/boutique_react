@@ -28,7 +28,7 @@ export default function App() {
             🛒 Boutique
           </h1>
 
-          <div className="nar-right">
+          <div className="nav-right">
             {user ? (
               <div className="user-info">
                 <span>👤 {user.username}</span>
@@ -54,6 +54,7 @@ export default function App() {
         {page === 'home' && <Home goToProduct={goToProduct} />}
         {page === 'product' && <ProductDetail productId={selectedProductId} setPage={setPage} />}
         {page === 'cart' && <Cart setPage={setPage} />}
+        {page === 'login' && <Login setPage={setPage}/>}
       </main>
 
       <footer className="footer">
