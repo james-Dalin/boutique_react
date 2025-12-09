@@ -1,42 +1,33 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { CartContext } from './CartContext'
 import './App.css'
+import Home from './pages/Home'
+import Cart from './pages/Cart'
 
 export default function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Récupère les produits au démarrage
-  useEffect(() => {
-    fetch('http://localhost:3001/products')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div>⏳ Chargement...</div>;
-  if (error) return <div>❌ Erreur: {error}</div>;
+  const [page, setPage] = useState('home'); // 'home' ou 'cart'
+  const { cart } = useContext(CartContext);
 
   return (
     <div className="app">
-      <h1>🛒 Boutique</h1>
-      <div className="products">
-        {products.map(product => (
-          <div key={product.id} className="product-card">
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <p className="price">${product.price}</p>
-            <button>Ajouter au panier</button>
-          </div>
-        ))}
-      </div>
+      <header className="header">
+        <div className="nav">
+          <h1 onClick={() => setPage('home')} style={{ cursor: 'pointer' }}>
+            🛒 Boutique
+          </h1>
+          <button 
+            onClick={() => setPage('cart')}
+            className="cart-btn"
+          >
+            Panier ({cart.length})
+          </button>
+        </div>
+      </header>
+
+      <main className="main">
+        {page === 'home' && <Home />}
+        {page === 'cart' && <Cart setPage={setPage} />}
+      </main>
     </div>
   );
 }
