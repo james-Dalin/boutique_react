@@ -4,71 +4,115 @@ export const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const [user, setUser] = useState(null); // <--- NOUVEAU: User state
+  const [user, setUser] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false); // ← NOUVEAU
 
-  // Charge Panier + User au démarrage
+  // ========== CHARGER AU DÉMARRAGE ==========
   useEffect(() => {
     // Panier
     const savedCart = localStorage.getItem('cart');
-    if (savedCart) setCart(JSON.parse(savedCart));
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Erreur lecture panier:', error);
+        setCart([]);
+      }
+    }
 
     // User
     const savedUser = localStorage.getItem('user');
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Erreur lecture user:', error);
+        setUser(null);
+      }
+    }
 
-  // Sauvegarde Panier
+    setIsLoaded(true); // ← Marque que le chargement est fait
+  }, []); // ← DÉPENDANCE VIDE = une seule fois au démarrage
+
+
+  // ========== SAUVEGARDER LE PANIER ==========
   useEffect(() => {
+    if (!isLoaded) return; // ← N'AGIS QUE SI CHARGÉ
+
     localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    console.log('📦 Panier sauvegardé:', cart);
+  }, [cart, isLoaded]); // ← DÉPENDANCE CORRECTE
 
-  // Sauvegarde User
+
+  // ========== SAUVEGARDER L'USER ==========
   useEffect(() => {
+    if (!isLoaded) return; // ← N'AGIS QUE SI CHARGÉ
+
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
+      console.log('👤 User sauvegardé:', user);
     } else {
       localStorage.removeItem('user');
+      console.log('👤 User supprimé');
     }
-  }, [user]);
+  }, [user, isLoaded]); // ← DÉPENDANCE CORRECTE
 
-  // Login function
-  const login = (userData) => {
-    setUser(userData);
-  };
 
-  // Logout function
-  const logout = () => {
-    setUser(null);
-    // Optionnel: Vider le panier au logout?
-    // setCart([]); 
-  };
-
-  // ... (Garde addToCart, removeFromCart, etc. comme avant) ...
+  // ========== FONCTIONS PANIER ==========
   const addToCart = (product) => {
     const existingItem = cart.find(item => item.id === product.id);
+
     if (existingItem) {
-      setCart(cart.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
+      setCart(cart.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
     } else {
       setCart([...cart, { ...product, quantity: 1 }]);
     }
   };
 
-  const removeFromCart = (productId) => setCart(cart.filter(item => item.id !== productId));
-  
-  const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) removeFromCart(productId);
-    else setCart(cart.map(item => item.id === productId ? { ...item, quantity } : item));
+  const removeFromCart = (productId) => {
+    setCart(cart.filter(item => item.id !== productId));
   };
 
-  const clearCart = () => setCart([]);
+  const updateQuantity = (productId, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCart(cart.map(item =>
+        item.id === productId
+          ? { ...item, quantity }
+          : item
+      ));
+    }
+  };
 
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + (item.price * item.quantity),
+    0
+  ).toFixed(2);
+
+  // ========== EXPORT ==========
+  const value = {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    totalPrice,
+    user,
+    setUser,
+    logout: () => setUser(null)
+  };
 
   return (
-    <CartContext.Provider value={{
-      cart, addToCart, removeFromCart, updateQuantity, clearCart, totalPrice,
-      user, login, logout // <--- Exporte ces nouvelles fonctions
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
