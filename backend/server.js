@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 
@@ -48,3 +48,4 @@ app.listen(port, () => {
   console.log(`✅ API running on http://localhost:${port}`);
   console.log(`📌 Products: http://localhost:${port}/products`);
 });
+

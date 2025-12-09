@@ -1,13 +1,13 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from 'react';
 
 // Crée le Context
 export const CartContext = createContext();
 
 // Provider = composant qui partage le contexte
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState([]);
 
-    // Charge le panier depuis LocalStroage au démarrage
+  // Charge le panier depuis LocalStorage au démarrage
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -19,7 +19,7 @@ export function CartProvider({ children }) {
     }
   }, []);
 
-  // Sauvegarde le panier dasn LocalStorage à chaque modification
+  // Sauvegarde le panier dans LocalStorage à chaque modification
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
@@ -30,31 +30,33 @@ export function CartProvider({ children }) {
     const existingItem = cart.find(item => item.id === product.id);
 
     if (existingItem) {
-        //Si oui, augmente la quantité
-        setCart(cart.map(item => item.id === product.id
-            ? {... item, quantity: item.quantity + 1}
-            : item
-        ));
+      // Si oui, augmente la quantité
+      setCart(cart.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
     } else {
-        // Sinon, ajoute le produit
-        setCart([...cart, {...product, quantity: 1}]);
+      // Sinon, ajoute le produit
+      setCart([...cart, { ...product, quantity: 1 }]);
     }
   };
 
   // Supprimer un produit du panier
-  const removeFromtCart = (productId) => {
+  const removeFromCart = (productId) => {
     setCart(cart.filter(item => item.id !== productId));
   };
 
   // Modifier la quantité
   const updateQuantity = (productId, quantity) => {
     if (quantity <= 0) {
-        removeFromtCart(productId);
+      removeFromCart(productId);
     } else {
-        setCart(cart.map(item => item.id === productId
-            ? { ...item, quantity }
-            : item
-        ));
+      setCart(cart.map(item =>
+        item.id === productId
+          ? { ...item, quantity }
+          : item
+      ));
     }
   };
 
@@ -73,7 +75,7 @@ export function CartProvider({ children }) {
   const value = {
     cart,
     addToCart,
-    removeFromtCart,
+    removeFromCart,
     updateQuantity,
     clearCart,
     totalPrice
