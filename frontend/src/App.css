@@ -128,3 +128,24 @@ h1 {
   margin: 0 auto;
   padding: 0 20px;
 }
+
+.logo {
+  transition: transform 0.3s;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 60px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 14px;
+}
