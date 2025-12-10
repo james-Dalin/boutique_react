@@ -2,13 +2,13 @@
     {
         "id": 1,
         "username": "admin",
-        "password": "password123",
+        "password": "$2b$10$iQBqjurNyu5m.pVeeLmVyuAl53FSSYgezAt6n.vhiE1eMkbko6aAC",
         "email": "admin@boutique.com"
     },
     {
         "id": 2,
         "username": "client",
-        "password": "client123",
+        "password": "$2b$10$iQBqjurNyu5m.pVeeLmVyuAl53FSSYgezAt6n.vhiE1eMkbko6aAC",
         "email": "client@test.com"
     }
 ]
