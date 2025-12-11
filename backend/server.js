@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 
-const bcrypt = require("bcrypt");
-
 const app = express();
 const port = 3001;
 
@@ -15,6 +13,7 @@ const readJSON = (filename) => {
   try {
     return JSON.parse(fs.readFileSync(filename, 'utf8'));
   } catch (error) {
+    console.error(`Erreur lecture ${filename}:`, error);
     return [];
   }
 };
@@ -30,15 +29,12 @@ app.post('/login', (req, res) => {
   const { username, password } = req.body;
   const users = readJSON('./users.json');
 
-  // Cherche l'utilisateur
   const user = users.find(u => u.username === username && u.password === password);
 
   if (user) {
-    // Succès: On renvoie l'utilisateur (sans le mot de passe)
     const { password, ...userWithoutPassword } = user;
     res.json({ success: true, user: userWithoutPassword });
   } else {
-    // Échec
     res.status(401).json({ success: false, error: 'Identifiants incorrects' });
   }
 });
